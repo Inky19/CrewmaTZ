@@ -1,0 +1,11 @@
+[package]
+entrypoint = "src/lib.typ"
+name = "cetz-among-us"
+version = "0.0.1"
+compiler = "0.13.0"
+authors = ["inky19"]
+repository = "https://github.com/inky19/cetz-among-us"
+description = "Create some AmongUs characters in CeTz environments."
+categories = ["components", "model"]
+keywords = ["among us", "cetz"]
+license = "Apache-2.0"
