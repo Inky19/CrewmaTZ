@@ -1,10 +1,10 @@
 [package]
 entrypoint = "src/lib.typ"
-name = "cetz-among-us"
+name = "CrewmaTZ"
 version = "0.0.1"
 compiler = "0.13.0"
 authors = ["inky19"]
-repository = "https://github.com/inky19/cetz-among-us"
+repository = "https://github.com/Inky19/CrewmaTZ"
 description = "Create some AmongUs characters in CeTz environments."
 categories = ["components", "model"]
 keywords = ["among us", "cetz"]
