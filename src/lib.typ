@@ -1,5 +1,4 @@
 #import "@preview/cetz:0.3.4"
-#import "@preview/cetz-plot:0.1.1"
 
 #let backpack(color: red, style) = {
     import cetz.draw: hobby, rect
@@ -7,11 +6,11 @@
     if style == "drawing" {
       backpack = hobby((-0.9,2),(-0.9,3.5),(-0.75,4.1), (-0.6, 4.2), (-0.1, 4.2),
     (0.25, 4.2), (0.3, 3.9), (0.3, 3.5), (0.3,1.2), (0.25, 1),
-    (-0.1, 0.9), (-0.6,1), (-0.8, 1.5), close: true, stroke: 5pt+black, fill: color)
+    (-0.1, 0.9), (-0.6,1), (-0.8, 1.5), close: true, fill: color)
     } else if style == "simple" {
-      backpack = rect((-0.7, 4.2), (rel: (1, -3.2)), radius: 0.3, stroke: 5pt+black, fill: color)
+      backpack = rect((-0.7, 4.2), (rel: (1, -3.2)), radius: 0.3, fill: color)
     } else {
-      panic("Unknow style: " + style)
+      panic("Unknown style: " + style)
 
     }
   return backpack
@@ -19,7 +18,7 @@
 
 #let body(color:red, style) = {
   import cetz.draw: hobby, arc, line, merge-path
-  let body = merge-path(fill: color, stroke: 5pt,
+  let body = merge-path(fill: color,
   {
     if style == "drawing" {
       hobby(
@@ -47,14 +46,14 @@
       line((3.5, 4.5), (3.5, 0.3))
 
     } else {
-      panic("Unknow style: " + style)
+      panic("Unknown style: " + style)
     }
     
   })
   return body
 }
 
-#let visor(color: red, style) = {
+#let visor(color: red, style, alpha:255) = {
   let (vis_l, vis_h) = (2.1, 1.8)
   import cetz.draw: hobby, rect, group
   let visor = none
@@ -65,7 +64,7 @@
         ta: (1, 1, 1, 1, 1, 2),
         tb: (2, 1, 1, 1, 1, 1),
         stroke: none,
-        fill: rgb("#55aaff"),
+        fill: rgb(85, 170, 255, alpha),
       )
     
       // Shadow
@@ -74,7 +73,7 @@
         ta: (2, 1, 10, 1, 2, 1),
         tb: (1, 1, 1, 1, 1, 100),
         stroke:none,
-        fill: blue
+        fill: rgb(0,74,217,alpha)
       )
       
       // Shine
@@ -83,7 +82,7 @@
       let shine_l = vis_l/3
       let shine_h = vis_h/5
       rect((shine_x, shine_y), (rel: (shine_l, shine_h)), 
-        fill: white, stroke: none, radius: 50%
+        fill: rgb(255,255,255,alpha), stroke: none, radius: 50%
       )
 
       // Border
@@ -91,13 +90,12 @@
         close: true, omega: 0,
         ta: (1, 1, 1, 1, 1, 2),
         tb: (2, 1, 1, 1, 1, 1),
-        stroke: 5pt,
       )
     })
   } else if style == "simple" {
     visor = group({
       rect((0, 0), (rel: (vis_l*1.3, vis_h)), 
-        fill: rgb("#55aaff"), stroke: none,
+        fill: rgb(85, 170, 255, alpha), stroke: none,
         radius: 50%
       )
 
@@ -107,33 +105,64 @@
       let shine_l = vis_l/3
       let shine_h = vis_h/5
       rect((shine_x, shine_y), (rel: (shine_l, shine_h)), 
-        fill: white, stroke: none, radius: 50%
+        fill: rgb(255,255,255,alpha), stroke: none, radius: 50%
       )
 
       rect((0, 0), (rel: (vis_l*1.3, vis_h)), 
-        fill: none, stroke: 5pt,
+        fill: none,
         radius: 50%
       )
     })
   } else {
-    panic("Unknow style: " + style)
+    panic("Unknown style: " + style)
   }
   return visor
 }
 
 
-#let amongus(color: red, style:"drawing", size:5cm) = {
+#let amongus(color: red, style:"drawing", size:5cm, alpha:1.0,angle:0deg) = {
+  alpha = int(calc.round(alpha*255))
+  if alpha != 255 {
+    let (r,g,b,a) = color.components()
+    color = rgb(r, g, b, alpha)
+  }
+  let border_color = rgb(0,0,0,alpha)
+  
   let amog = cetz.canvas({
     import cetz.draw: *
-
+    set-style(stroke: 5pt+border_color)
     backpack(color: color, style)
     body(color: color, style)
     
     // Visor
     let (vis_x, vis_y) = (1.4, 3)
     translate(x: vis_x, y:vis_y)
-    visor(color: color, style)
+    visor(color: color, style, alpha:alpha)
   })
 
-  scale(y:size,x:auto)[#amog]
+  rotate(angle,scale(y:size,x:auto)[#amog])
+}
+
+#let sussy-watermark(doc, style:"simple", alpha:0.2, color: red, height:15cm, angle:-30deg) = {
+  let width = context page.width
+  set page(background: amongus(color: color, style: style, size:height, alpha: alpha, angle: angle))
+  doc
+}
+
+#let sussy-numbering(p) = {
+  set page(numbering: (..nums) => {
+    let number = nums.pos().at(0)
+    return box({
+      place(horizon + center, amongus(size: 1.5em, color: yellow, angle: 45deg * (number - 1)))
+      place(horizon + center, highlight(fill:rgb("ffffffcc"), radius: 50%, text(nums.pos().map(str).at(0), size: 1.5em)))
+    }
+    )
+  })
+  p
+}
+
+#let test_template(doc) = {
+  let width = context page.width
+  set page(footer: "Sussy baka" + width)
+  doc
 }
