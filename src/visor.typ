@@ -1,6 +1,6 @@
 #import "dep.typ":*
 
-#let visor(hue: red, style, alpha:255) = {
+#let visor(hue: red, style, alpha:1.0, shadow: true) = {
   let _alpha = alpha-float2int(alpha)
   let (vis_l, vis_h) = (2.1, 1.8)
   import cetz.draw: hobby, rect, group
@@ -16,13 +16,15 @@
       )
     
       // Shadow
-      hobby((vis_l*0.87333, vis_h*0.2), (vis_h/2, 0) , (vis_l*0.0667,vis_h*0.1), (0, vis_h*0.9), (vis_l*0.1334, vis_h*0.4), (vis_l*0.4666 , vis_h*0.2), 
-        close: true, omega: 0,
-        ta: (2, 1, 10, 1, 2, 1),
-        tb: (1, 1, 1, 1, 1, 100),
-        stroke:none,
-        fill: rgb(0,74,217,_alpha)
-      )
+      if shadow {
+        hobby((vis_l*0.87333, vis_h*0.2), (vis_h/2, 0) , (vis_l*0.0667,vis_h*0.1), (0, vis_h*0.9), (vis_l*0.1334, vis_h*0.4), (vis_l*0.4666 , vis_h*0.2), 
+          close: true, omega: 0,
+          ta: (2, 1, 10, 1, 2, 1),
+          tb: (1, 1, 1, 1, 1, 100),
+          stroke:none,
+          fill: rgb(0,0,0,alpha-float2int(alpha*0.15))
+        )
+      }
       
       // Shine
       let shine_x = vis_l/1.57

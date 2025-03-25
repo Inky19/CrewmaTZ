@@ -3,7 +3,7 @@
 #import "body.typ":*
 #import "visor.typ":*
 
-#let amongus(hue: red, style:"drawing", size:5cm, alpha:1.0,angle:0deg) = {
+#let amongus(hue: red, style:"drawing", size:5cm, shadow:true, alpha:1.0,angle:0deg) = {
   let _alpha = alpha-float2int(alpha)
   if type(hue) == color {
     let (r,g,b,a) = hue.components()
@@ -22,13 +22,13 @@
   let amog = cetz.canvas({
     import cetz.draw: *
     set-style(stroke: 5pt+border_color)
-    backpack(hue: hue, style)
-    body(hue: hue, style)
+    backpack(hue: hue, style, alpha:alpha, shadow: shadow)
+    body(hue: hue, style, alpha:alpha, shadow: shadow)
     
     // Visor
     let (vis_x, vis_y) = (1.4, 3)
     translate(x: vis_x, y:vis_y)
-    visor(hue: hue, style, alpha:alpha)
+    visor(hue: hue, style, alpha:alpha, shadow: shadow)
   })
 
   rotate(angle,scale(y:size,x:auto)[#amog])
